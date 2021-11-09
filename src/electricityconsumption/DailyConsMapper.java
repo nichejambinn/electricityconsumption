@@ -17,7 +17,7 @@ public class DailyConsMapper extends Mapper<LongWritable, Text, Text, DailyConsW
         try {
             houseId = Integer.parseInt(values[1]);
             date = values[2];
-            energyReading = Double.parseDouble(values[3]);
+            energyReading = Double.parseDouble(values[4]);
         } catch (Exception ex) {
             houseId = -1;
             date = "9999-99-99";
