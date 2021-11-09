@@ -6,19 +6,15 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 
-public class HouseDateMaxReducer extends Reducer<IntWritable, HouseWritable, IntWritable, DoubleWritable> {
+public class HouseDateMaxReducer extends Reducer<IntWritable, DoubleWritable, IntWritable, DoubleWritable> {
     @Override
-    protected void reduce(IntWritable key, Iterable<HouseWritable> houseConsIter, Context context) throws IOException, InterruptedException {
-        double avgEnergyConsumption;
-        double totalEnergyConsumption = 0.0d;
-        int numDays = 0;
+    protected void reduce(IntWritable key, Iterable<DoubleWritable> houseDateIter, Context context) throws IOException, InterruptedException {
+        double maxEnergyConsumption = Double.MIN_VALUE;
 
-        for (HouseWritable houseCons: houseConsIter) {
-            totalEnergyConsumption += houseCons.getTotalEnergyConsumption();
-            numDays += houseCons.getNumDays();
+        for (DoubleWritable enerCons: houseDateIter) {
+            maxEnergyConsumption = Math.max(maxEnergyConsumption, enerCons.get());
         }
 
-        avgEnergyConsumption = totalEnergyConsumption / numDays;
-        context.write(key, new DoubleWritable(avgEnergyConsumption));
+        context.write(key, new DoubleWritable(maxEnergyConsumption));
     }
 }

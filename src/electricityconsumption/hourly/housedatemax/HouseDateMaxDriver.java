@@ -65,14 +65,13 @@ public class HouseDateMaxDriver {
 
         job2.setJobName("Maximum Hourly Electricity Consumption");
         job2.setMapperClass(HouseDateMapper.class);
+        job2.setCombinerClass(HouseDateMaxReducer.class);
         job2.setReducerClass(HouseDateMaxReducer.class);
 
         job2.setNumReduceTasks(4);
 
         FileInputFormat.addInputPath(job2, tempPath);
         FileOutputFormat.setOutputPath(job2, outPath);
-
-        job2.setMapOutputValueClass(HouseWritable.class);
 
         job2.setOutputKeyClass(IntWritable.class);
         job2.setOutputValueClass(DoubleWritable.class);
@@ -81,11 +80,6 @@ public class HouseDateMaxDriver {
         job1success = job1.waitForCompletion(true);
         if (job1success) {
             System.out.println("Job 1 successful");
-
-            //////////////////////////////////////
-            System.exit(0);
-            //////////////////////////////////////
-
             job2success = job2.waitForCompletion(true);
             if (job2success) {
                 System.out.println("Job 2 successful");
