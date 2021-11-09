@@ -14,11 +14,17 @@ public class RunMapReduceJob {
     }
 
     public void run(String[] args) throws Exception {
+        final String TMP_PATH = "hdfs://192.168.56.5:9820/phase1-tmp";
+
         Path inPath = new Path(args[0]);
         Path outPath = new Path(args[1]);
 
-        System.out.println(inPath.toString());
-        System.out.println(outPath.toString());
+        // create a unique temporary intermediary output path for the first job
+        String tempPathString = TMP_PATH + "-" + System.currentTimeMillis();
+        Path tempPath = new Path(tempPathString);
+
+        System.out.println(inPath);
+        System.out.println(outPath);
 
         Configuration conf = new Configuration();
         
@@ -34,8 +40,11 @@ public class RunMapReduceJob {
 
         job1.setNumReduceTasks(4);
 
+        // search directories recursively for input
         FileInputFormat.addInputPath(job1, inPath);
-        FileOutputFormat.setOutputPath(job1, outPath);
+        FileInputFormat.setInputDirRecursive(job1, true);
+
+        FileOutputFormat.setOutputPath(job1, tempPath);
 
         job1.setMapOutputValueClass(DailyConsWritable.class);
 
@@ -55,5 +64,7 @@ public class RunMapReduceJob {
             System.out.println("Job 1 failed");
             System.exit(1);
         }
+
+        System.exit(0);
     }
 }

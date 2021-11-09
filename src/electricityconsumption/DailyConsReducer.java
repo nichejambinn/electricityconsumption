@@ -9,7 +9,7 @@ public class DailyConsReducer extends Reducer<Text, DailyConsWritable, Text, Dai
     @Override
     protected void reduce(Text key, Iterable<DailyConsWritable> dailyConsIter, Context context) throws IOException, InterruptedException {
         double minEnergyReading = Double.MAX_VALUE;
-        double maxEnergyReading = 0.0d;
+        double maxEnergyReading = Double.MIN_VALUE;
 
         for (DailyConsWritable dailyCons: dailyConsIter) {
             minEnergyReading = Math.min(minEnergyReading, dailyCons.getMinEnergyReading());

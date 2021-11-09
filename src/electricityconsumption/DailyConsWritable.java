@@ -37,7 +37,7 @@ public class DailyConsWritable implements Writable {
     @Override
     public void readFields(DataInput in) throws IOException {
         minEnergyReading = in.readDouble();
-        maxEnergyReading = in.readInt();
+        maxEnergyReading = in.readDouble();
     }
 
     public static DailyConsWritable read(DataInput in) throws IOException {

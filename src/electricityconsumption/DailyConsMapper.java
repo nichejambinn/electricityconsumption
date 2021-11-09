@@ -20,7 +20,8 @@ public class DailyConsMapper extends Mapper<LongWritable, Text, Text, DailyConsW
             energyReading = Double.parseDouble(values[4]);
         } catch (Exception ex) {
             houseId = -1;
-            date = "9999-99-99";
+            //date = "9999-99-99";
+            date = value.toString();
             energyReading = 0.0d;
         }
 
