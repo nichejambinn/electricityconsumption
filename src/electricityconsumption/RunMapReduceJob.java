@@ -3,6 +3,7 @@ package electricityconsumption;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -34,9 +35,9 @@ public class RunMapReduceJob {
         job1.setJarByClass(RunMapReduceJob.class);
 
         job1.setJobName("Total Daily Electricity Consumption");
-        job1.setMapperClass(DailyConsMapper.class);
-        job1.setCombinerClass(DailyConsReducer.class);
-        job1.setReducerClass(DailyConsTotalReducer.class);
+        job1.setMapperClass(DailyMapper.class);
+        job1.setCombinerClass(DailyReducer.class);
+        job1.setReducerClass(DailyTotalReducer.class);
 
         job1.setNumReduceTasks(4);
 
@@ -46,25 +47,49 @@ public class RunMapReduceJob {
 
         FileOutputFormat.setOutputPath(job1, tempPath);
 
-        job1.setMapOutputValueClass(DailyConsWritable.class);
+        job1.setMapOutputValueClass(DailyWritable.class);
 
         job1.setOutputKeyClass(Text.class);
         job1.setOutputValueClass(DoubleWritable.class);
 
-//        // job 2: get average daily energy consumption for each house
-//        Job job2 = Job.getInstance(conf);
-//        boolean job2success;
-//        job2.setJarByClass(RunMapReduceJob.class);
-//        job2.setJobName("Average Daily Electricity Consumption");
+        // job 2: get average daily energy consumption for each house
+        Job job2 = Job.getInstance(conf);
+        boolean job2success;
+        job2.setJarByClass(RunMapReduceJob.class);
 
+        job2.setJobName("Average Daily Electricity Consumption");
+        job2.setMapperClass(HouseMapper.class);
+        job2.setCombinerClass(HouseSumReducer.class);
+        job2.setReducerClass(HouseAvgReducer.class);
+
+        job2.setNumReduceTasks(4);
+
+        FileInputFormat.addInputPath(job2, tempPath);
+        FileOutputFormat.setOutputPath(job2, outPath);
+
+        job2.setMapOutputValueClass(HouseWritable.class);
+
+        job2.setOutputKeyClass(IntWritable.class);
+        job2.setOutputValueClass(DoubleWritable.class);
+
+        // chain job execution
         job1success = job1.waitForCompletion(true);
         if (job1success) {
             System.out.println("Job 1 successful");
+            job2success = job2.waitForCompletion(true);
+            if (job2success) {
+                System.out.println("Job 2 successful");
+
+                // remove temporary files
+
+                System.exit(0);
+            } else {
+                System.out.println("Job 2 failed");
+                System.exit(1);
+            }
         } else {
             System.out.println("Job 1 failed");
             System.exit(1);
         }
-
-        System.exit(0);
     }
 }

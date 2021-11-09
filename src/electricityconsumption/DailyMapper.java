@@ -6,7 +6,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 
-public class DailyConsMapper extends Mapper<LongWritable, Text, Text, DailyConsWritable> {
+public class DailyMapper extends Mapper<LongWritable, Text, Text, DailyWritable> {
     @Override
     protected void map(LongWritable key, Text value, Mapper.Context context) throws IOException, InterruptedException {
         String[] values = value.toString().split(",");
@@ -20,11 +20,10 @@ public class DailyConsMapper extends Mapper<LongWritable, Text, Text, DailyConsW
             energyReading = Double.parseDouble(values[4]);
         } catch (Exception ex) {
             houseId = -1;
-            //date = "9999-99-99";
-            date = value.toString();
+            date = "9999-99-99";
             energyReading = 0.0d;
         }
 
-        context.write(new Text(date + "\t" + houseId), new DailyConsWritable(energyReading, energyReading));
+        context.write(new Text(date + "\t" + houseId), new DailyWritable(energyReading, energyReading));
     }
 }

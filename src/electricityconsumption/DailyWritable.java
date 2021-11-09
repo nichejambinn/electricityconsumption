@@ -6,16 +6,16 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class DailyConsWritable implements Writable {
+public class DailyWritable implements Writable {
     private double minEnergyReading;
     private double maxEnergyReading;
 
-    DailyConsWritable() {
+    DailyWritable() {
         this.minEnergyReading = 0;
         this.maxEnergyReading = 0;
     }
 
-    DailyConsWritable(double minEnergyReading, double maxEnergyReading) {
+    DailyWritable(double minEnergyReading, double maxEnergyReading) {
         this.minEnergyReading = minEnergyReading;
         this.maxEnergyReading = maxEnergyReading;
     }
@@ -40,8 +40,8 @@ public class DailyConsWritable implements Writable {
         maxEnergyReading = in.readDouble();
     }
 
-    public static DailyConsWritable read(DataInput in) throws IOException {
-        DailyConsWritable w = new DailyConsWritable();
+    public static DailyWritable read(DataInput in) throws IOException {
+        DailyWritable w = new DailyWritable();
         w.readFields(in);
         return w;
     }
