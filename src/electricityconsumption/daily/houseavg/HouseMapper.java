@@ -1,4 +1,4 @@
-package electricityconsumption;
+package electricityconsumption.daily.houseavg;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;

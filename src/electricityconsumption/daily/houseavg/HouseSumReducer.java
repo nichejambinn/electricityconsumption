@@ -1,15 +1,13 @@
-package electricityconsumption;
+package electricityconsumption.daily.houseavg;
 
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 
-public class HouseAvgReducer extends Reducer<IntWritable, HouseWritable, IntWritable, DoubleWritable> {
+public class HouseSumReducer extends Reducer<IntWritable, HouseWritable, IntWritable, HouseWritable> {
     @Override
     protected void reduce(IntWritable key, Iterable<HouseWritable> houseConsIter, Context context) throws IOException, InterruptedException {
-        double avgEnergyConsumption;
         double totalEnergyConsumption = 0.0d;
         int numDays = 0;
 
@@ -18,7 +16,6 @@ public class HouseAvgReducer extends Reducer<IntWritable, HouseWritable, IntWrit
             numDays += houseCons.getNumDays();
         }
 
-        avgEnergyConsumption = totalEnergyConsumption / numDays;
-        context.write(key, new DoubleWritable(avgEnergyConsumption));
+        context.write(key, new HouseWritable(totalEnergyConsumption, numDays));
     }
 }

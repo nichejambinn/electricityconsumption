@@ -1,4 +1,4 @@
-package electricityconsumption;
+package electricityconsumption.daily;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;

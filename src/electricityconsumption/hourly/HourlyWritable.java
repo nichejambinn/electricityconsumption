@@ -1,4 +1,4 @@
-package electricityconsumption;
+package electricityconsumption.hourly;
 
 import org.apache.hadoop.io.Writable;
 
@@ -6,16 +6,16 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class DailyWritable implements Writable {
+public class HourlyWritable implements Writable {
     private double minEnergyReading;
     private double maxEnergyReading;
 
-    DailyWritable() {
+    HourlyWritable() {
         this.minEnergyReading = 0;
         this.maxEnergyReading = 0;
     }
 
-    DailyWritable(double minEnergyReading, double maxEnergyReading) {
+    HourlyWritable(double minEnergyReading, double maxEnergyReading) {
         this.minEnergyReading = minEnergyReading;
         this.maxEnergyReading = maxEnergyReading;
     }
@@ -40,8 +40,8 @@ public class DailyWritable implements Writable {
         maxEnergyReading = in.readDouble();
     }
 
-    public static DailyWritable read(DataInput in) throws IOException {
-        DailyWritable w = new DailyWritable();
+    public static HourlyWritable read(DataInput in) throws IOException {
+        HourlyWritable w = new HourlyWritable();
         w.readFields(in);
         return w;
     }

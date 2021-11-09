@@ -1,4 +1,4 @@
-package electricityconsumption;
+package electricityconsumption.hourly.housedatemax;
 
 import org.apache.hadoop.io.Writable;
 
