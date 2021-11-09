@@ -21,29 +21,39 @@ public class RunMapReduceJob {
         System.out.println(outPath.toString());
 
         Configuration conf = new Configuration();
-        Job job = Job.getInstance(conf);
-        job.setJarByClass(RunMapReduceJob.class);
+        
+        // job 1: get total energy consumption for each date and house
+        Job job1 = Job.getInstance(conf);
+        boolean job1success;
+        job1.setJarByClass(RunMapReduceJob.class);
 
-        // part 1: get total energy consumption for each date and house
-        job.setJobName("Total Daily Electricity Consumption");
-        boolean part1success, part2success;
-        job.setMapperClass(DailyConsMapper.class);
-        job.setCombinerClass(DailyConsReducer.class);
-        job.setReducerClass(DailyConsTotalReducer.class);
+        job1.setJobName("Total Daily Electricity Consumption");
+        job1.setMapperClass(DailyConsMapper.class);
+        job1.setCombinerClass(DailyConsReducer.class);
+        job1.setReducerClass(DailyConsTotalReducer.class);
 
-        job.setNumReduceTasks(4);
+        job1.setNumReduceTasks(4);
 
-        FileInputFormat.addInputPath(job, inPath);
-        FileOutputFormat.setOutputPath(job, outPath);
+        FileInputFormat.addInputPath(job1, inPath);
+        FileOutputFormat.setOutputPath(job1, outPath);
 
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(DoubleWritable.class);
+        job1.setMapOutputValueClass(DailyConsWritable.class);
 
-        part1success = job.waitForCompletion(true);
-        if (part1success) {
+        job1.setOutputKeyClass(Text.class);
+        job1.setOutputValueClass(DoubleWritable.class);
 
+//        // job 2: get average daily energy consumption for each house
+//        Job job2 = Job.getInstance(conf);
+//        boolean job2success;
+//        job2.setJarByClass(RunMapReduceJob.class);
+//        job2.setJobName("Average Daily Electricity Consumption");
+
+        job1success = job1.waitForCompletion(true);
+        if (job1success) {
+            System.out.println("Job 1 successful");
         } else {
-            System.exit(part1success ? 0 : 1);
+            System.out.println("Job 1 failed");
+            System.exit(1);
         }
     }
 }

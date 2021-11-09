@@ -9,7 +9,7 @@ import java.io.IOException;
 public class DailyConsMapper extends Mapper<LongWritable, Text, Text, DailyConsWritable> {
     @Override
     protected void map(LongWritable key, Text value, Mapper.Context context) throws IOException, InterruptedException {
-        String[] values = value.toString().split("\\s+");
+        String[] values = value.toString().split(",");
         String date;
         int houseId;
         double energyReading;
