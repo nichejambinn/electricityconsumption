@@ -1,8 +1,14 @@
 #!/bin/bash
 
 if [[ $1 != "" ]]; then 
-    echo "Path in hdfs required"
-    exit 1
+    touch {a..d}.log
+    hadoop fs -mkdir /test/2015/04/17 /test/2016/09/2{7..8} /test/2021/12/0{5..7} /test/2019/11/02
+    hadoop fs -copyFromLocal a.log /test/2016/09/28
+    hadoop fs -copyFromLocal b.log /test/2021/12/06
+    hadoop fs -copyFromLocal c.log /test/2019/11/02
+    hadoop fs -copyFromLocal d.log /test/2021/12/05
+    rm {a..d}.log
+    LATEST_PATH="/test/"
 else
     LATEST_PATH=$1
 fi
