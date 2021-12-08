@@ -39,7 +39,7 @@ do
 
         # if folder is from before last week remove it
         if [[ ${dir_date} -lt ${last_week} ]]; then
-            rm -r ${dir}
+            hadoop fs -rm -r ${dir}
             #echo "${dir} and contents removed"
         fi
     fi
