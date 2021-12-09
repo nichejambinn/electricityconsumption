@@ -1,7 +1,11 @@
 # create files of recent data
+# 1 sorts
+# 2 gets last 7 days of data from file
+# 3 changes dates to this past week
+# 4 split the file and give a name with timestamp
 
-# add a positional argument to run this first on its own
-if [[ $1 != "" ]]; then
+if [[ $1 == 1 ]]; then
+    echo "Sorting data by date"
     # for each text file
     for file in ./*.txt
     do 
@@ -9,7 +13,8 @@ if [[ $1 != "" ]]; then
         sort -k 3 ${file} > ${file}_sorted.tmp
         echo "${file} sorted by date"
     done
-else
+elif [[ $1 == 2 ]]; then
+    echo "Getting last 7 days of data"
     # for each sorted text file
     for file in ./*_sorted.tmp
     do
@@ -20,24 +25,47 @@ else
         # takes a long time too
         awk "/${week_ago}/,/*/" ${file} > ${file}_thatweek.tmp
         echo "Got last 7 days of data from ${file}"
-
-        # change dates to those of this last week
-        for i in {0..6}
-        do
-            # go a few days ahead so data isn't lost while we work with it
-            this_day=$(date -d "$((i+3)) day" '+%Y-%m-%d')
-            that_day=$(date -d "-$i day ${most_recent}" '+%Y-%m-%d')
-            sed -n -i.bak "s/${that_day}/${this_day}" ${file}_thatweek.tmp        
-        done
+    done
+elif [[ $1 == 3 ]]; then
+    echo "Changing dates"
+    for file in ./*_thatweek.tmp
+    do
+        cp ${file} ${file}_thisweek.tmp
 
         # delete last line
-        sed -n -i '$d' ${file}_thatweek.tmp
+        sed -i '$d' ${file}_thisweek.tmp
 
-        # rename file
-        mv ${file}_thatweek.tmp ${file}_week.new
-        echo "Created ${file}_week.new"
+        most_recent=$(tail -n1 ${file}_thisweek.tmp | awk -F '\\s+' '{print $3}')
+        # change dates to those of this past week
+        for i in {0..7}
+        do
+            # go a few days ahead so data isn't lost while we work with it
+            this_day=$(date -d "$((3-i)) day" '+%Y-%m-%d')
+            that_day=$(date -d "-$i day ${most_recent}" '+%Y-%m-%d')
+            sed -i.bak "s/${that_day}/${this_day}/" ${file}_thisweek.tmp        
+        done
 
-        # clean up
-        #rm *.tmp *.bak
+        echo "Created ${file}_thisweek.tmp with now recent data"
+    done
+else
+
+    for file in ./*_thisweek.tmp
+    do
+        midpoint=$(($(wc -l ${file} | cut -d' ' -f1) / 2))
+
+        # split up file
+        sed -n "1,$((${midpoint}-1)) p" ${file} > ${file}_1.tmp
+        sed -n "${midpoint},$ p" ${file} > ${file}_2.tmp
+
+        # rename each file with timestamp of oldest record _yyyymmddhhmmss
+        for splitfile in ./${file}_{1..2}.tmp
+        do
+            date_string=$(head -n1 ${splitfile} | awk -F '\\s+' '{print $3} {print $4}')
+            oldest=$(date -d "${date_string}" '+%Y%m%d%H%M%S')
+            filename=$( echo ${splitfile} | sed -r "s/^(consumption_[0-9]+).*/\1_${oldest}.txt/")
+            mv ${splitfile} ${filename}
+            echo "Created ${filename}"
+        done
+        # rm *.tmp *.bak
     done
 fi
