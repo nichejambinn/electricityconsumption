@@ -48,7 +48,7 @@ elif [[ $1 == 3 ]]; then
         echo "Created ${file}_thisweek.tmp with now recent data"
     done
 else
-
+    echo "Partitioning files"
     for file in ./*_thisweek.tmp
     do
         midpoint=$(($(wc -l ${file} | cut -d' ' -f1) / 2))
@@ -56,16 +56,17 @@ else
         # split up file
         sed -n "1,$((${midpoint}-1)) p" ${file} > ${file}_1.tmp
         sed -n "${midpoint},$ p" ${file} > ${file}_2.tmp
-
+        
         # rename each file with timestamp of oldest record _yyyymmddhhmmss
         for splitfile in ./${file}_{1..2}.tmp
         do
             date_string=$(head -n1 ${splitfile} | awk -F '\\s+' '{print $3} {print $4}')
             oldest=$(date -d "${date_string}" '+%Y%m%d%H%M%S')
-            filename=$( echo ${splitfile} | sed -r "s/^(consumption_[0-9]+).*/\1_${oldest}.txt/")
+            filename=$( echo ${splitfile} | sed -r "s/.*(consumption_[0-9]+).*/\1_${oldest}.txt/")
             mv ${splitfile} ${filename}
             echo "Created ${filename}"
         done
-        # rm *.tmp *.bak
+        
+        rm *.tmp *.bak
     done
 fi
